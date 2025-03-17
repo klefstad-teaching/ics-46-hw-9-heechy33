@@ -31,7 +31,44 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
 }
 
 bool is_adjacent(const string& word1, const string& word2) {
-    return edit_distance_within(word1, word2, 1);
+    if (word1 == word2) {
+        return true;
+    }
+    int word1_len = word1.size();
+    int word2_len = word2.size();
+    if (abs(word1_len - word2_len) > 1) {
+        return false;
+    }
+
+    if (word1_len == word2_len) {
+        int diff = 0;
+        for (int i = 0; i < word1_len; ++i) {
+            if (word1[i] != word2[i]) {
+                diff++;
+            }
+            if (diff > 1) {
+                return false;
+            }
+        }
+        return true;
+    } else if (abs(word1_len - word2_len) == 1) {
+        string shorter = (word1_len < word2_len) ? word1 : word2;
+        string longer = (word1_len < word2_len) ? word2 : word1;
+        int diffs = 0;
+        for (int i = 0, j = 0; i < shorter.size() && j < longer.size(); i++, j++) {
+            if (shorter[i] != longer[j]) {
+                diffs += 1;
+                i--;
+            }
+            if (diffs > 1) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        return false;
+    }
+    
 }
 
 vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list) {
@@ -84,8 +121,13 @@ void load_words(set<string> & word_list, const string& file_name) {
 }
 
 void print_word_ladder(const vector<string>& ladder) {
-    for (size_t i = 0; i < ladder.size(); ++i) {
-        cout << ladder[i] << " ";
+    if (!ladder.empty()) {
+        cout << "Word ladder found: ";
+        for (size_t i = 0; i < ladder.size(); ++i) {
+            cout << ladder[i] << " ";
+        }
+    } else {
+        cout << "No word ladder found.";
     }
 }
 #define my_assert(e) {cout << #e << ((e) ? " passed": " failed") << endl;}
